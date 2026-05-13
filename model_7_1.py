@@ -3381,7 +3381,7 @@ with tab_overview:
     col_a, col_b = st.columns([3, 1])
     with col_a:
         st.subheader("FG Inventory — Historical + 12-Month Projection")
-        st.plotly_chart(fg_chart(r, get_demand_events()), use_container_width=True)
+        st.plotly_chart(fg_chart(r, get_demand_events()), use_container_width=True, key="fg_chart_overview")
     with col_b:
         st.subheader("MPS Parameters")
         st.markdown(f"""
@@ -3536,7 +3536,7 @@ with tab_fg_status:
     #     plot_bgcolor="rgba(0,0,0,0)", margin=dict(l=0, r=200, t=20, b=0),
     #     legend=dict(orientation="h", y=-0.35),
     # )
-    # st.plotly_chart(fig_gauge, use_container_width=True)
+    # st.plotly_chart(fig_gauge, use_container_width=True, key="plotly_1")
 
     # Backorder alert
     if backorder_now > 0:
@@ -3670,7 +3670,7 @@ with tab_fg_status:
                 paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
                 legend=dict(orientation="h", y=-0.2),
             )
-            st.plotly_chart(fig30, use_container_width=True)
+            st.plotly_chart(fig30, use_container_width=True, key="plotly_2")
 
     # ── Demand events in next 30 days ───────────────────────
     st.markdown("#### 📦 Demand Events — Next 60 Days")
@@ -3862,7 +3862,7 @@ with tab_mps:
         st.info("No demand events yet. Add your first order above.")
 
     st.divider()
-    st.plotly_chart(fg_chart(r, get_demand_events()), use_container_width=True)
+    st.plotly_chart(fg_chart(r, get_demand_events()), use_container_width=True, key="fg_chart_mps")
     st.divider()
 
     # ── ROP Alert / WO Confirmation UI ───────────────────────
@@ -4847,7 +4847,7 @@ with tab_mrp:
             kpi_stock       = f"{int(actual_current_stk):,} KG",
             kpi_moq         = f"{int(comp_moq):,} KG",
             kpi_rop         = f"{global_rm_ss.get(comp.get('rm_material_id') or comp_reel_nm, {}).get('rop_kg', r.get('reel_rop_map', {}).get(comp_reel_nm, r['reel_rop_kg'])):,} KG",
-            detail_table_fn = lambda c=comp_raw: st.plotly_chart(mrp_reel_chart({**r, "raw": c}), use_container_width=True),
+            detail_table_fn = lambda c=comp_raw, ci=comp_idx: st.plotly_chart(mrp_reel_chart({**r, "raw": c}), use_container_width=True, key=f"mrp_reel_chart_{ci}"),
             summary_md      = comp_reel_summary_md,
             raw_override    = comp_raw,
             section_key     = f"comp{comp_idx}",
@@ -5358,7 +5358,7 @@ with tab_capacity:
         st.plotly_chart(
             capacity_chart_monthly(cap_res, raw_data["processes"]),
             use_container_width=True
-        )
+        , key="plotly_4")
 
         # Monthly detail table
         st.markdown("#### Monthly Capacity Details")
@@ -5476,7 +5476,7 @@ with tab_wo:
                 height=280, yaxis_title="Days",
                 paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
             )
-            st.plotly_chart(fig_lt, use_container_width=True)
+            st.plotly_chart(fig_lt, use_container_width=True, key="plotly_5")
 
 
 def run_forecasts(monthly_series: pd.Series, n_months: int = 6) -> dict:
@@ -5699,7 +5699,7 @@ with tab_variability:
             )
             fig_var.update_xaxes(gridcolor="#1E293B")
             fig_var.update_yaxes(gridcolor="#1E293B")
-            st.plotly_chart(fig_var, use_container_width=True)
+            st.plotly_chart(fig_var, use_container_width=True, key="plotly_6")
 
             # ── SS formula preview ────────────────────────────
             st.divider()
@@ -5935,7 +5935,7 @@ with tab_forecast:
                 )
                 fig.update_xaxes(gridcolor="#1E293B", showgrid=True)
                 fig.update_yaxes(gridcolor="#1E293B", showgrid=True)
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, use_container_width=True, key="plotly_7")
 
                 # ── Forecast table ────────────────────────────────────
                 st.markdown("#### Forecast Summary (Next 6 Months)")
