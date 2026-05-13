@@ -2952,13 +2952,16 @@ with st.sidebar:
                 return rm_inv[key]
         return None
 
-    # ── Track data source — reset registries only when files change ──
+    # ── Track data source — reset registries only when files actually change ──
+    # Use the cached file keys (name+size stored when file was parsed) NOT the live
+    # file uploader objects — on Streamlit Cloud the uploader returns None briefly
+    # between reruns, causing spurious registry wipes.
     if all_results_raw:
         _src_key = (
-            getattr(sku_file,     "name", ""),
-            getattr(fg_file,      "name", ""),
-            getattr(rm_file,      "name", ""),
-            getattr(billing_file, "name", ""),
+            st.session_state.get("_cached_sku_key",  ""),
+            st.session_state.get("_cached_fg_key",   ""),
+            st.session_state.get("_cached_rm_key",   ""),
+            st.session_state.get("_cached_bill_key", ""),
         )
         if st.session_state.get("_data_source") != _src_key:
             st.session_state["_data_source"]       = _src_key
@@ -2967,13 +2970,20 @@ with st.sidebar:
             st.session_state["reel_pos_released"]  = {}
             st.session_state["pouch_pos_released"] = {}
 
-        # Register all reels (keyed by rm_material_id) and apply RM inventory stock
+        # Register all reels (keyed by rm_material_id) and apply RM inventory stock.
+        # Always re-apply stock from rm_inventory so the Registry tab stays populated
+        # even after reruns (registry stock is overwritten only from the parsed file,
+        # never from a stale 0 — manual edits in the Registry tab are preserved because
+        # _ensure_reel_in_registry skips already-registered keys).
         for mat_id, raw in all_results_raw.items():
             for comp in raw.get("bom_components", []):
                 _ensure_reel_in_registry(comp)
                 _rk = _reel_reg_key(comp)
                 qty = _rm_stock_for_comp(comp, rm_inventory) if rm_inventory else None
-                if qty is not None and st.session_state["reel_registry"].get(_rk, {}).get("stock_kg", 0) == 0:
+                if qty is not None:
+                    # Always apply file stock — this keeps the registry in sync with
+                    # the uploaded RM file across reruns. Manual registry edits are
+                    # intentionally overwritten on re-upload (file is the source of truth).
                     st.session_state["reel_registry"][_rk]["stock_kg"] = qty
             _ensure_pouch_in_registry(raw)
 
