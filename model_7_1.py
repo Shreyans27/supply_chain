@@ -3596,7 +3596,7 @@ with tab_fg_status:
     if wip_rows:
         wip_df = pd.DataFrame(wip_rows)
         st.dataframe(
-            wip_df.style.applymap(
+            wip_df.style.map(
                 lambda v: "color:#16A34A;font-weight:600;" if "Today" in str(v) or "Arrived" in str(v)
                           else "color:#2563EB;font-weight:600;" if "Production" in str(v) else "",
                 subset=["Status"],
@@ -3623,7 +3623,7 @@ with tab_fg_status:
         with st.expander(f"📋 Historical Work Orders ({len(hist_rows)}) — already reflected in current FG", expanded=False):
             hist_df = pd.DataFrame(hist_rows).drop(columns=["Days Remaining","Backorder Cleared"], errors="ignore")
             st.dataframe(
-                hist_df.style.applymap(
+                hist_df.style.map(
                     lambda v: "color:#6B7280;" if "Arrived" in str(v) else "",
                     subset=["Status"],
                 ),
@@ -3998,7 +3998,7 @@ with tab_mps:
                         st.error("🔴 Insufficient RM — place RM purchase order before confirming this WO.")
 
                     st.dataframe(
-                        rm_df.style.applymap(
+                        rm_df.style.map(
                             lambda v: "color:#16A34A;font-weight:600;" if "✅" in str(v) else
                                       "color:#D97706;font-weight:600;" if "🚚" in str(v) else
                                       "color:#DC2626;font-weight:600;" if "🔴" in str(v) else "",
@@ -4243,7 +4243,7 @@ with tab_mps:
 
         summary_display = pd.DataFrame(month_rows).drop(columns=["_wos"])
         st.dataframe(
-            summary_display.style.applymap(
+            summary_display.style.map(
                 lambda v: "color:#DC2626;font-weight:600;" if "Needed" in str(v) else
                           "color:#16A34A;font-weight:600;" if "Issued" in str(v) else "",
                 subset=["WO Status"]
@@ -4264,7 +4264,7 @@ with tab_mps:
                         "Arrival Date", "Prod LT", "Status"
                     ]
                     st.dataframe(
-                        wo_detail_df.style.applymap(
+                        wo_detail_df.style.map(
                             lambda v: "color:#DC2626;font-weight:600;" if v == "🔴 Needed" else
                                       "color:#16A34A;font-weight:600;" if v == "✅ Issued" else "",
                             subset=["Status"],
@@ -4364,7 +4364,7 @@ with tab_mrp:
     if _global_ss_rows:
         _gss_df = pd.DataFrame(_global_ss_rows)
         st.dataframe(
-            _gss_df.style.applymap(
+            _gss_df.style.map(
                 lambda v: "color:#DC2626;font-weight:600;" if "Below ROP" in str(v) else
                           "color:#16A34A;font-weight:600;" if "Sufficient" in str(v) else
                           "color:#D97706;font-weight:600;" if str(v).startswith("🟡") else "",
@@ -4934,7 +4934,7 @@ with tab_mrp:
             })
         bom_df = pd.DataFrame(bom_rows)
         st.dataframe(
-            bom_df.style.applymap(
+            bom_df.style.map(
                 lambda v: "color:#DC2626;font-weight:600;" if v == "🔴 YES" else
                           "color:#16A34A;font-weight:600;" if v == "✅ OK" else "",
                 subset=["Net Short?"],
@@ -5043,7 +5043,7 @@ with tab_registry:
                 st.markdown("#### 📋 All Active POs")
                 _po_summary_df = pd.DataFrame(_all_pos_rows)
                 st.dataframe(
-                    _po_summary_df.style.applymap(
+                    _po_summary_df.style.map(
                         lambda v: "color:#2563EB;font-weight:600;" if v == "🏭 In Production" else
                                   "color:#16A34A;font-weight:600;" if v == "✅ Arrived" else "",
                         subset=["Status"],
@@ -5317,7 +5317,7 @@ with tab_registry:
             if p_summary:
                 p_df = pd.DataFrame(p_summary)
                 st.dataframe(
-                    p_df.style.applymap(
+                    p_df.style.map(
                         lambda v: "color:#DC2626;font-weight:600;" if "🔴" in str(v) else
                                   "color:#16A34A;font-weight:600;" if "✅" in str(v) else "",
                         subset=["Status"],
@@ -5452,7 +5452,7 @@ with tab_wo:
 
         st.divider()
         st.dataframe(
-            wo.style.applymap(
+            wo.style.map(
                 lambda v: "color:#DC2626;font-weight:600;" if v == "❌ No" else
                           "color:#16A34A;font-weight:600;" if v == "✅ Yes" else "",
                 subset=["On Time?"]
@@ -6307,7 +6307,7 @@ with tab_outsource:
             return ""
 
         st.dataframe(
-            _os_df.style.applymap(_os_style, subset=["Status"]),
+            _os_df.style.map(_os_style, subset=["Status"]),
             hide_index=True, use_container_width=True,
         )
 
